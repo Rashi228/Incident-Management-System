@@ -1,0 +1,56 @@
+# ============================================================
+# SECRETS & ENVIRONMENT — NEVER COMMIT THESE
+# ============================================================
+backend/.env
+backend/service-account-key.json
+backend/*.json
+frontend/.env
+
+# ============================================================
+# PYTHON
+# ============================================================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+backend/venv/
+backend/.venv/
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# ============================================================
+# NODE / ANGULAR
+# ============================================================
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+frontend/src_recovery/
+frontend/fix-html.py
+frontend/restore.py
+frontend/restore2.py
+
+# ============================================================
+# DOCKER & DATABASE VOLUMES
+# ============================================================
+postgres_data/
+*.log
+
+# ============================================================
+# TERRAFORM STATE (contains secrets)
+# ============================================================
+terraform/.terraform/
+terraform/*.tfstate
+terraform/*.tfstate.backup
+terraform/.terraform.lock.hcl
+terraform/terraform.tfvars
+
+# ============================================================
+# IDE & OS FILES
+# ============================================================
+.vscode/
+.idea/
+*.DS_Store
+Thumbs.db
