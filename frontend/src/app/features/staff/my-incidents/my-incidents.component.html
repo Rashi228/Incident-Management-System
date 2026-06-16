@@ -1,0 +1,34 @@
+<div class="page animate-fade-in">
+  <div class="page-header">
+    <div>
+      <h1>My Incidents</h1>
+      <p>Incidents you have raised</p>
+    </div>
+  </div>
+  <div class="skeleton-table card" *ngIf="loading">
+    <div class="skeleton-row" *ngFor="let i of [1,2,3]"></div>
+  </div>
+  <div class="table-container card" *ngIf="!loading">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Status</th>
+          <th>Priority</th>
+          <th>Created</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let incident of incidents">
+          <td class="title-cell">{{ incident.title }}</td>
+          <td><app-status-badge [status]="incident.status" [label]="incident.status"></app-status-badge></td>
+          <td><app-status-badge [status]="incident.priority" [label]="incident.priority"></app-status-badge></td>
+          <td class="date-cell">{{ incident.created_at | date:'MMM d' }}</td>
+        </tr>
+        <tr *ngIf="incidents.length === 0">
+          <td colspan="4" class="empty-state">No incidents found.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
