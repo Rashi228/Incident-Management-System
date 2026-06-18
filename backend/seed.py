@@ -53,8 +53,8 @@ async def seed():
             hashed = pwd_context.hash(u["password"])
             await session.execute(
                 text("""
-                    INSERT INTO users (id, email, hashed_password, full_name, role, is_active, created_at)
-                    VALUES (:id, :email, :hashed_password, :full_name, :role, :is_active, :created_at)
+                    INSERT INTO users (id, email, hashed_password, full_name, role, is_active, created_at, approval_status)
+                    VALUES (:id, :email, :hashed_password, :full_name, :role, :is_active, :created_at, :approval_status)
                 """),
                 {
                     "id": str(uuid.uuid4()),
@@ -64,6 +64,7 @@ async def seed():
                     "role": u["role"],
                     "is_active": True,
                     "created_at": datetime.utcnow(),
+                    "approval_status": "approved",
                 }
             )
             print(f"✅  Created: {u['email']}  (password: {u['password']})")

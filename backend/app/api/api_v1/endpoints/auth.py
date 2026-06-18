@@ -18,13 +18,6 @@ async def login_access_token(
     db: AsyncSession = Depends(get_db),
     form_data: OAuth2PasswordRequestForm = Depends()
 ) -> dict:
-    # Check fixed admin credentials first
-    if form_data.username == config.settings.ADMIN_EMAIL and form_data.password == config.settings.ADMIN_PASSWORD:
-        admin_id = uuid.UUID('00000000-0000-0000-0000-000000000000')
-        return {
-            "access_token": security.create_access_token(admin_id, "admin"),
-            "token_type": "bearer",
-        }
 
     result = await db.execute(select(User).where(User.email == form_data.username))
     user = result.scalars().first()

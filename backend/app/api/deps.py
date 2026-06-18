@@ -25,16 +25,6 @@ async def get_current_user(
             detail="Could not validate credentials",
         )
     
-    if str(token_data.sub) == '00000000-0000-0000-0000-000000000000':
-        from datetime import datetime
-        return User(
-            id=token_data.sub,
-            email=config.settings.ADMIN_EMAIL,
-            full_name="System Administrator",
-            role="admin",
-            is_active=True,
-            created_at=datetime.utcnow()
-        )
 
     result = await db.execute(select(User).where(User.id == token_data.sub))
     user = result.scalars().first()
