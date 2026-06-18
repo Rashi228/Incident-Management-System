@@ -20,19 +20,7 @@ USERS = [
         "password": "admin123",
         "full_name": "System Admin",
         "role": "admin",
-    },
-    {
-        "email": "support@company.com",
-        "password": "support123",
-        "full_name": "Support Agent",
-        "role": "support",
-    },
-    {
-        "email": "staff@company.com",
-        "password": "staff123",
-        "full_name": "Staff Member",
-        "role": "staff",
-    },
+    }
 ]
 
 async def seed():
