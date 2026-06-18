@@ -4,7 +4,11 @@
       <h1>Admin Dashboard</h1>
       <p>Good to see you, {{ currentUser?.full_name }}. Here's what's happening.</p>
     </div>
-    <div class="header-actions">
+    <div class="header-actions" style="display: flex; gap: 1rem; align-items: center;">
+      <button class="btn-primary" style="display: flex; align-items: center; gap: 0.5rem;" (click)="generateMonthlyReport()" [disabled]="generatingAnalytics">
+        <span class="spinner" *ngIf="generatingAnalytics" style="width: 14px; height: 14px; border-width: 2px;"></span>
+        {{ generatingAnalytics ? 'Generating...' : '📊 Monthly Report' }}
+      </button>
       <a routerLink="/admin/incidents" class="btn-primary" style="text-decoration:none;">View All Incidents</a>
     </div>
   </div>

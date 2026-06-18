@@ -48,6 +48,18 @@
     </div>
     <div class="modal-body" *ngIf="selectedIncident">
       <p class="incident-title">{{ selectedIncident.title }}</p>
+
+      <div class="report-section" *ngIf="selectedIncident.status === 'resolved' || selectedIncident.status === 'closed'" style="margin-bottom: 1.5rem; padding: 1rem; background: var(--bg-color); border-radius: 8px;">
+        <h4 style="margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+          <span>✨</span> AI Post-Mortem Report
+        </h4>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Generate a detailed, professional post-mortem PDF using Gemini AI.</p>
+        <button class="btn-primary w-100" style="display: flex; justify-content: center; align-items: center; gap: 0.5rem;" (click)="generatePostmortem(selectedIncident)" [disabled]="isGeneratingReport">
+          <span class="spinner" *ngIf="isGeneratingReport" style="width: 14px; height: 14px; border-width: 2px;"></span>
+          {{ isGeneratingReport ? 'Gemini is writing...' : '📄 Generate PDF Report' }}
+        </button>
+      </div>
+
       <form [formGroup]="updateForm">
         <div class="form-group">
           <label class="form-label">New Status</label>

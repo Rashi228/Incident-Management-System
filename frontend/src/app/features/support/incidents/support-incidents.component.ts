@@ -4,6 +4,7 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 import { IncidentService } from '../../../core/services/incident.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { ReportService } from '../../../core/services/report.service';
 import { Incident } from '../../../models/incident.model';
 import { BadgeComponent } from '../../../shared/components/badge/badge.component';
 
@@ -22,11 +23,13 @@ export class SupportIncidentsComponent implements OnInit {
   noteForm: FormGroup;
   updateForm: FormGroup;
   statuses = ['open', 'in_progress', 'resolved', 'closed'];
+  isGeneratingReport = false;
 
   constructor(
     private incidentService: IncidentService,
     private toast: ToastService,
     public authService: AuthService,
+    private reportService: ReportService,
     private fb: FormBuilder
   ) {
     this.noteForm = this.fb.group({ note_text: ['', Validators.required] });
@@ -67,6 +70,21 @@ export class SupportIncidentsComponent implements OnInit {
         this.ngOnInit();
       },
       error: () => this.toast.error('Failed to update')
+    });
+  }
+
+  generatePostmortem(incident: Incident) {
+    this.isGeneratingReport = true;
+    this.reportService.generatePostmortem(incident.id).subscribe({
+      next: (report) => {
+        this.isGeneratingReport = false;
+        this.toast.success('Report generated successfully!');
+        this.reportService.downloadReport(report.storage_url, report.file_name);
+      },
+      error: (err) => {
+        this.isGeneratingReport = false;
+        this.toast.error(err.error?.detail || 'Failed to generate report');
+      }
     });
   }
 }

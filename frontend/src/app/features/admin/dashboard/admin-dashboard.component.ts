@@ -4,6 +4,8 @@ import { RouterLink } from '@angular/router';
 import { IncidentService } from '../../../core/services/incident.service';
 import { UserService } from '../../../core/services/user.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { ReportService } from '../../../core/services/report.service';
+import { ToastService } from '../../../core/services/toast.service';
 import { DashboardStats } from '../../../models/incident.model';
 import { User } from '../../../models/user.model';
 
@@ -19,13 +21,16 @@ export class AdminDashboardComponent implements OnInit {
   users: User[] = [];
   loading = true;
   currentUser: User | null = null;
+  generatingAnalytics = false;
 
   statCards: any[] = [];
 
   constructor(
     private incidentService: IncidentService,
     private userService: UserService,
-    public authService: AuthService
+    public authService: AuthService,
+    private reportService: ReportService,
+    private toast: ToastService
   ) {}
 
   ngOnInit() {
@@ -61,6 +66,21 @@ export class AdminDashboardComponent implements OnInit {
       { label: 'In Progress', value: sd['in_progress'] || 0, icon: '🟡', color: 'amber', sub: 'Being worked on' },
       { label: 'Resolved', value: sd['resolved'] || 0, icon: '🟢', color: 'green', sub: 'Successfully closed' },
     ];
+  }
+
+  generateMonthlyReport() {
+    this.generatingAnalytics = true;
+    this.reportService.generateMonthlyAnalytics().subscribe({
+      next: (report) => {
+        this.generatingAnalytics = false;
+        this.toast.success('Analytics report generated!');
+        this.reportService.downloadReport(report.storage_url, report.file_name);
+      },
+      error: (err) => {
+        this.generatingAnalytics = false;
+        this.toast.error(err.error?.detail || 'Failed to generate report');
+      }
+    });
   }
 
   getStatusKeys(): string[] { return Object.keys(this.stats?.status_distribution || {}); }

@@ -11,17 +11,22 @@ class Settings(BaseSettings):
     
     DATABASE_URL: str = "postgresql+asyncpg://postgres:password@localhost:5432/ims"
     
-    GCP_PROJECT_ID: str = "incident-management-project"
-    GCP_BUCKET_NAME: str = "incident-management-storage"
-    
     ADMIN_EMAIL: str = "admin@company.com"
     ADMIN_PASSWORD: str = "admin123"
 
+    # Email (Gmail SMTP)
     SMTP_SERVER: Optional[str] = "smtp.gmail.com"
     SMTP_PORT: int = 587
     SMTP_USERNAME: Optional[str] = None
     SMTP_PASSWORD: Optional[str] = None
     EMAILS_FROM_EMAIL: Optional[str] = None
+
+    # Supabase (DB + Storage)
+    SUPABASE_URL: Optional[str] = None
+    SUPABASE_SERVICE_KEY: Optional[str] = None
+
+    # Gemini AI
+    GEMINI_API_KEY: Optional[str] = None
 
     class Config:
         env_file = ".env"

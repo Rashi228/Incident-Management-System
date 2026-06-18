@@ -12,21 +12,6 @@ provider "google" {
   region  = var.region
 }
 
-resource "google_storage_bucket" "ims_bucket" {
-  name          = var.bucket_name
-  location      = var.region
-  force_destroy = true
-  
-  uniform_bucket_level_access = true
-
-  cors {
-    origin          = ["*"]
-    method          = ["GET", "HEAD", "PUT", "POST", "DELETE"]
-    response_header = ["*"]
-    max_age_seconds = 3600
-  }
-}
-
 resource "google_artifact_registry_repository" "ims_repo" {
   location      = var.region
   repository_id = "ims-repo"
@@ -51,12 +36,16 @@ resource "google_cloud_run_v2_service" "backend" {
         value = var.secret_key
       }
       env {
-        name  = "GCP_PROJECT_ID"
-        value = var.project_id
+        name  = "SUPABASE_URL"
+        value = var.supabase_url
       }
       env {
-        name  = "GCP_BUCKET_NAME"
-        value = var.bucket_name
+        name  = "SUPABASE_SERVICE_KEY"
+        value = var.supabase_service_key
+      }
+      env {
+        name  = "GEMINI_API_KEY"
+        value = var.gemini_api_key
       }
     }
   }

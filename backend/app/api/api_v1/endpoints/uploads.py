@@ -8,7 +8,7 @@ from app.db.session import get_db
 from app.models.incident import Incident, Attachment
 from app.models.user import User
 from app.schemas.incident import Attachment as AttachmentSchema
-from app.services.gcs_service import upload_file_to_gcs
+from app.services.supabase_service import upload_file_to_supabase
 
 router = APIRouter()
 
@@ -24,9 +24,11 @@ async def upload_attachment(
     incident = result.scalars().first()
     if not incident:
         raise HTTPException(status_code=404, detail="Incident not found")
-        
-    file_url = upload_file_to_gcs(file)
-    
+
+    file_bytes = await file.read()
+    safe_name = f"{incident_id}/{file.filename}"
+    file_url = upload_file_to_supabase(file_bytes, safe_name, bucket="attachments")
+
     db_obj = Attachment(
         incident_id=incident_id,
         file_name=file.filename,
@@ -37,3 +39,4 @@ async def upload_attachment(
     await db.commit()
     await db.refresh(db_obj)
     return db_obj
+

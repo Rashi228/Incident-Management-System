@@ -9,19 +9,31 @@ variable "region" {
   default     = "asia-south1"
 }
 
-variable "bucket_name" {
-  description = "Name of the GCS bucket for uploads"
-  type        = string
-}
-
 variable "database_url" {
-  description = "PostgreSQL connection string"
+  description = "Supabase PostgreSQL connection string"
   type        = string
   sensitive   = true
 }
 
 variable "secret_key" {
   description = "Secret key for JWT authentication"
+  type        = string
+  sensitive   = true
+}
+
+variable "supabase_url" {
+  description = "Supabase API URL"
+  type        = string
+}
+
+variable "supabase_service_key" {
+  description = "Supabase Service Role Key"
+  type        = string
+  sensitive   = true
+}
+
+variable "gemini_api_key" {
+  description = "Google Gemini API Key"
   type        = string
   sensitive   = true
 }
