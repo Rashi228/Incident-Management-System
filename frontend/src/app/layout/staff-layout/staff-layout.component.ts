@@ -16,10 +16,10 @@ export class StaffLayoutComponent implements OnInit {
   sidebarCollapsed = false;
 
   navItems = [
-    { icon: '⊞', label: 'Dashboard', route: '/staff/dashboard' },
-    { icon: '🎫', label: 'Requests', route: '/staff/incidents' },
-    { icon: '🛒', label: 'Services', route: '/staff/incidents/new', queryParams: { type: 'service' } },
-    { icon: '💡', label: 'Knowledge', route: '/staff/knowledge' },
+    { label: 'Dashboard', route: '/staff/dashboard' },
+    { label: 'Requests', route: '/staff/incidents' },
+    { label: 'Services', route: '/staff/incidents/new', queryParams: { type: 'service' } },
+    { label: 'Knowledge', route: '/staff/knowledge' },
   ];
 
   constructor(public authService: AuthService) {}

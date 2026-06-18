@@ -16,11 +16,11 @@ export class AdminLayoutComponent implements OnInit {
   sidebarCollapsed = false;
 
   navItems = [
-    { icon: '⊞', label: 'Dashboard', route: '/admin/dashboard' },
-    { icon: '⚡', label: 'Incidents', route: '/admin/incidents' },
-    { icon: '👥', label: 'Users', route: '/admin/users' },
-    { icon: '📊', label: 'Analytics', route: '/admin/analytics' },
-    { icon: '📝', label: 'Write Article', route: '/admin/articles/new' },
+    { label: 'Dashboard', route: '/admin/dashboard' },
+    { label: 'Incidents', route: '/admin/incidents' },
+    { label: 'Users', route: '/admin/users' },
+    { label: 'Analytics', route: '/admin/analytics' },
+    { label: 'Write Article', route: '/admin/articles/new' },
   ];
 
   constructor(public authService: AuthService) {}

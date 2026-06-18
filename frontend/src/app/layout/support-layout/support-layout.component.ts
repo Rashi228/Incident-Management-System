@@ -16,9 +16,9 @@ export class SupportLayoutComponent implements OnInit {
   sidebarCollapsed = false;
 
   navItems = [
-    { icon: '⊞', label: 'Dashboard', route: '/support/dashboard' },
-    { icon: '🎫', label: 'Incidents', route: '/support/incidents' },
-    { icon: '📝', label: 'Write Article', route: '/support/articles/new' },
+    { label: 'Dashboard', route: '/support/dashboard' },
+    { label: 'Incidents', route: '/support/incidents' },
+    { label: 'Write Article', route: '/support/articles/new' },
   ];
 
   constructor(public authService: AuthService) {}

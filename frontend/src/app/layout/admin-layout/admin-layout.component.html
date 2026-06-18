@@ -10,7 +10,6 @@
     </div>
     <nav class="sidebar-nav">
       <a *ngFor="let item of navItems" [routerLink]="item.route" routerLinkActive="active" class="nav-item" [title]="sidebarCollapsed ? item.label : ''">
-        <span class="nav-icon">{{ item.icon }}</span>
         <span class="nav-label" *ngIf="!sidebarCollapsed">{{ item.label }}</span>
       </a>
     </nav>

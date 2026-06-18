@@ -208,10 +208,10 @@ canvas {
 
 /* Sidebar collapse on mobile */
 @media (max-width: 768px) {
-  .app-container {
-    flex-direction: column;
-    height: auto;
-    min-height: 100vh;
+  .app-shell {
+    flex-direction: column !important;
+    height: auto !important;
+    min-height: 100vh !important;
   }
 
   .sidebar {
