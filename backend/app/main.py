@@ -21,3 +21,13 @@ app.include_router(api_router, prefix=settings.API_V1_STR)
 @app.get("/health")
 def health_check():
     return {"status": "ok"}
+
+@app.get("/api/v1/migrate")
+def run_migrations():
+    import os
+    import subprocess
+    try:
+        result = subprocess.run(["alembic", "upgrade", "head"], capture_output=True, text=True, check=True)
+        return {"status": "success", "output": result.stdout}
+    except subprocess.CalledProcessError as e:
+        return {"status": "error", "output": e.stderr}
