@@ -19,7 +19,6 @@
 
   <div class="stats-grid" *ngIf="!loading">
     <div class="stat-card card {{ card.color }}" *ngFor="let card of statCards">
-      <div class="stat-icon">{{ card.icon }}</div>
       <div class="stat-info">
         <div class="stat-value">{{ card.value }}</div>
         <div class="stat-label">{{ card.label }}</div>
@@ -68,23 +67,19 @@
       </div>
       <div class="user-summary">
         <div class="user-row">
-          <span class="u-icon admin">🛡️</span>
           <span class="u-label">Admins</span>
           <span class="u-count">{{ getAdminCount() }}</span>
         </div>
         <div class="user-row">
-          <span class="u-icon support">🎫</span>
           <span class="u-label">Support Agents</span>
           <span class="u-count">{{ getSupportCount() }}</span>
         </div>
         <div class="user-row">
-          <span class="u-icon staff">👤</span>
           <span class="u-label">Staff Members</span>
           <span class="u-count">{{ getStaffCount() }}</span>
         </div>
         <div class="divider"></div>
         <div class="user-row">
-          <span class="u-icon active">✅</span>
           <span class="u-label">Active Users</span>
           <span class="u-count">{{ getActiveCount() }}</span>
         </div>

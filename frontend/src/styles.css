@@ -228,12 +228,12 @@ canvas {
     width: 100% !important;
   }
 
-  .sidebar .nav-items {
-    display: flex;
-    flex-direction: row;
-    gap: 0.25rem;
-    width: 100%;
-    overflow-x: auto;
+  .sidebar .sidebar-nav {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 0.5rem !important;
+    width: 100% !important;
+    overflow-x: auto !important;
   }
 
   .sidebar .nav-item {

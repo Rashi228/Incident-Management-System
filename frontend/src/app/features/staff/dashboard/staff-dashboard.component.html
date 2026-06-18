@@ -6,7 +6,6 @@
       <p>Search our support center knowledge base</p>
       
       <div class="search-bar-wrapper">
-        <span class="search-icon">🔍</span>
         <input type="text" class="global-search" placeholder="How can we help you?">
       </div>
     </div>
@@ -15,7 +14,6 @@
   <!-- Action Cards (Overlapping Banner) -->
   <div class="action-cards-container">
     <a routerLink="/staff/incidents/new" class="action-card card">
-      <div class="ac-icon primary">🎟️</div>
       <div class="ac-text">
         <h4>New Incident</h4>
         <p>Report an incident</p>
@@ -23,7 +21,6 @@
     </a>
 
     <a [routerLink]="['/staff/incidents/new']" [queryParams]="{ type: 'service' }" class="action-card card">
-      <div class="ac-icon secondary">🛒</div>
       <div class="ac-text">
         <h4>Request Service</h4>
         <p>Browse the services offered</p>
@@ -31,7 +28,6 @@
     </a>
 
     <a routerLink="/staff/knowledge" class="action-card card">
-      <div class="ac-icon info">💡</div>
       <div class="ac-text">
         <h4>Knowledge</h4>
         <p>Browse knowledge base</p>
@@ -70,7 +66,6 @@
             </tr>
             <tr *ngIf="recent.length === 0">
               <td colspan="3" class="empty-state">
-                <div class="empty-icon">ⓘ</div>
                 <p>No Data Found</p>
               </td>
             </tr>

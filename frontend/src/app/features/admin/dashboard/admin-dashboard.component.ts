@@ -61,10 +61,10 @@ export class AdminDashboardComponent implements OnInit {
   buildStatCards() {
     const sd = this.stats?.status_distribution || {};
     this.statCards = [
-      { label: 'Total Incidents', value: this.stats?.total_incidents || 0, icon: '⚡', color: 'blue', sub: 'All time' },
-      { label: 'Open', value: sd['open'] || 0, icon: '🔵', color: 'indigo', sub: 'Awaiting assignment' },
-      { label: 'In Progress', value: sd['in_progress'] || 0, icon: '🟡', color: 'amber', sub: 'Being worked on' },
-      { label: 'Resolved', value: sd['resolved'] || 0, icon: '🟢', color: 'green', sub: 'Successfully closed' },
+      { label: 'Total Incidents', value: this.stats?.total_incidents || 0, color: 'blue', sub: 'All time' },
+      { label: 'Open', value: sd['open'] || 0, color: 'indigo', sub: 'Awaiting assignment' },
+      { label: 'In Progress', value: sd['in_progress'] || 0, color: 'amber', sub: 'Being worked on' },
+      { label: 'Resolved', value: sd['resolved'] || 0, color: 'green', sub: 'Successfully closed' },
     ];
   }
 
