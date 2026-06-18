@@ -124,6 +124,20 @@ def generate_pdf(title: str, subtitle: str, content: str, report_type: str) -> b
     pdf.set_text_color(30, 41, 59)
     pdf.set_y(45)
 
+    # Sanitize content to avoid latin-1 unicode encoding errors with Helvetica
+    def sanitize_text(text: str) -> str:
+        replacements = {
+            '—': '-', '–': '-', '“': '"', '”': '"', '‘': "'", '’': "'", '…': '...', '•': '-', '\u200b': ''
+        }
+        for k, v in replacements.items():
+            text = text.replace(k, v)
+        # Force encode/decode to latin-1 to strip any other unmappable unicode chars
+        return text.encode('latin-1', errors='replace').decode('latin-1')
+
+    title = sanitize_text(title)
+    subtitle = sanitize_text(subtitle)
+    content = sanitize_text(content)
+    
     # Title
     pdf.set_font("Helvetica", "B", 15)
     pdf.multi_cell(0, 8, title, align="L", wrapmode="CHAR")
@@ -163,7 +177,7 @@ def generate_pdf(title: str, subtitle: str, content: str, report_type: str) -> b
     pdf.set_y(-20)
     pdf.set_font("Helvetica", "I", 8)
     pdf.set_text_color(148, 163, 184)
-    pdf.cell(0, 5, "Confidential — TCS Enterprise IMS | AI-generated report using Google Gemini", align="C")
+    pdf.cell(0, 5, sanitize_text("Confidential - TCS Enterprise IMS | AI-generated report using Google Gemini"), align="C")
 
     return bytes(pdf.output())
 
