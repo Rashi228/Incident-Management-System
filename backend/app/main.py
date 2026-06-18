@@ -28,6 +28,6 @@ def run_migrations():
     import subprocess
     try:
         result = subprocess.run(["alembic", "upgrade", "head"], capture_output=True, text=True, check=True)
-        return {"status": "success", "output": result.stdout}
+        return {"status": "success", "output": result.stderr}
     except subprocess.CalledProcessError as e:
         return {"status": "error", "output": e.stderr}

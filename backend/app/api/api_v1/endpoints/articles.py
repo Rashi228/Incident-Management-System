@@ -37,16 +37,23 @@ async def create_article(
             detail="The user doesn't have enough privileges"
         )
     
-    db_obj = Article(
-        title=article_in.title,
-        content=article_in.content,
-        category=article_in.category,
-        author_id=current_user.id
-    )
-    db.add(db_obj)
-    await db.commit()
-    await db.refresh(db_obj)
-    return db_obj
+    try:
+        db_obj = Article(
+            title=article_in.title,
+            content=article_in.content,
+            category=article_in.category,
+            author_id=current_user.id
+        )
+        db.add(db_obj)
+        await db.commit()
+        await db.refresh(db_obj)
+        return db_obj
+    except Exception as e:
+        await db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Database Error: {str(e)}"
+        )
 
 @router.put("/{id}/views", response_model=ArticleSchema)
 async def increment_article_views(
