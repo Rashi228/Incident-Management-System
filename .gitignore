@@ -41,11 +41,7 @@ postgres_data/
 # ============================================================
 # TERRAFORM STATE (contains secrets)
 # ============================================================
-terraform/.terraform/
-terraform/*.tfstate
-terraform/*.tfstate.backup
-terraform/.terraform.lock.hcl
-terraform/terraform.tfvars
+terraform/
 
 # ============================================================
 # IDE & OS FILES
