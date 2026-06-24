@@ -2,6 +2,23 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.api_v1.api import api_router
 from app.core.config import settings
+import logging
+from pythonjsonlogger import jsonlogger
+from fastapi import Depends, Response, status
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import text
+from app.db.session import get_db
+
+# Set up structured JSON logging
+logger = logging.getLogger()
+logger.handlers.clear() # Clear default handlers
+logHandler = logging.StreamHandler()
+formatter = jsonlogger.JsonFormatter(
+    '%(asctime)s %(levelname)s %(name)s %(message)s'
+)
+logHandler.setFormatter(formatter)
+logger.addHandler(logHandler)
+logger.setLevel(logging.INFO)
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -19,8 +36,15 @@ app.add_middleware(
 app.include_router(api_router, prefix=settings.API_V1_STR)
 
 @app.get("/health")
-def health_check():
-    return {"status": "ok"}
+async def health_check(response: Response, db: AsyncSession = Depends(get_db)):
+    try:
+        # Deep Health Check: Verify database connectivity
+        await db.execute(text("SELECT 1"))
+        return {"status": "ok", "database": "connected"}
+    except Exception as e:
+        logger.error(f"Health check failed: {str(e)}")
+        response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
+        return {"status": "error", "database": "unreachable"}
 
 @app.get("/api/v1/migrate")
 def run_migrations():
