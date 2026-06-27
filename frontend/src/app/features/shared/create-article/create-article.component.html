@@ -2,7 +2,7 @@
   <div class="page-header">
     <div>
       <h1>Publish Knowledge Article</h1>
-      <p>Share your knowledge to help staff resolve issues faster</p>
+      <p>Share your knowledge to help users resolve issues faster</p>
     </div>
   </div>
 
@@ -27,13 +27,13 @@
       <div class="form-group">
         <label class="form-label">Article Content * <span style="color: var(--text-muted); font-weight: 400;">(min 50 characters)</span></label>
         <textarea class="form-control article-textarea" [class.error]="getError('content')" formControlName="content" rows="12"
-          placeholder="Write a clear, step-by-step explanation. Include any troubleshooting steps, links, or commands that would help a staff member resolve the issue on their own."></textarea>
+          placeholder="Write a clear, step-by-step explanation. Include any troubleshooting steps, links, or commands that would help a user resolve the issue on their own."></textarea>
         <span class="field-error" *ngIf="getError('content')">{{ getError('content') }}</span>
         <span class="char-count">{{ form.get('content')?.value?.length || 0 }} characters</span>
       </div>
 
       <div class="form-actions">
-        <a routerLink="/staff/knowledge" class="btn-cancel">Cancel</a>
+        <a routerLink="/service-desk/knowledge" class="btn-cancel">Cancel</a>
         <button type="submit" class="btn-primary" [disabled]="isSubmitting">
           <span class="spinner" *ngIf="isSubmitting"></span>
           {{ isSubmitting ? 'Publishing...' : '📤 Publish Article' }}

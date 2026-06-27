@@ -50,7 +50,7 @@ export const routes: Routes = [
     ]
   },
   {
-    path: 'staff',
+    path: 'service-desk',
     canActivate: [authGuard, roleGuard],
     data: { roles: ['staff', 'support', 'admin'] },
     loadComponent: () => import('./layout/staff-layout/staff-layout.component').then(m => m.StaffLayoutComponent),

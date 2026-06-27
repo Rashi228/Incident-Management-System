@@ -6,7 +6,7 @@
       <button class="collapse-btn" (click)="toggleSidebar()">{{ sidebarCollapsed ? '▶' : '◀' }}</button>
     </div>
     <div class="sidebar-role-badge" *ngIf="!sidebarCollapsed">
-      <span class="role-pill staff">Staff Member</span>
+      <span class="role-pill staff">User</span>
     </div>
     <nav class="sidebar-nav">
       <a *ngFor="let item of navItems" [routerLink]="item.route" [queryParams]="item.queryParams || null" routerLinkActive="active" class="nav-item" [title]="sidebarCollapsed ? item.label : ''">
@@ -32,7 +32,7 @@
   <main class="main-area">
     <header class="topbar">
       <div class="topbar-left">
-        <h3 class="page-context">Staff Portal</h3>
+        <h3 class="page-context">Service Desk</h3>
       </div>
       <div class="topbar-right">
         <div class="topbar-user">

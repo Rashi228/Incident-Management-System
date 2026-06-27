@@ -13,21 +13,21 @@
 
   <!-- Action Cards (Overlapping Banner) -->
   <div class="action-cards-container">
-    <a routerLink="/staff/incidents/new" class="action-card card">
+    <a routerLink="/service-desk/incidents/new" class="action-card card">
       <div class="ac-text">
         <h4>New Incident</h4>
         <p>Report an incident</p>
       </div>
     </a>
 
-    <a [routerLink]="['/staff/incidents/new']" [queryParams]="{ type: 'service' }" class="action-card card">
+    <a [routerLink]="['/service-desk/incidents/new']" [queryParams]="{ type: 'service' }" class="action-card card">
       <div class="ac-text">
         <h4>Request Service</h4>
         <p>Browse the services offered</p>
       </div>
     </a>
 
-    <a routerLink="/staff/knowledge" class="action-card card">
+    <a routerLink="/service-desk/knowledge" class="action-card card">
       <div class="ac-text">
         <h4>Knowledge</h4>
         <p>Browse knowledge base</p>
@@ -43,7 +43,7 @@
           <button class="tab-btn active">My Open Requests <span class="badge">{{ open.length }}</span></button>
           <button class="tab-btn">Most Read</button>
         </div>
-        <a routerLink="/staff/incidents" class="panel-link">View All →</a>
+        <a routerLink="/service-desk/incidents" class="panel-link">View All →</a>
       </div>
       
       <div class="table-container">
