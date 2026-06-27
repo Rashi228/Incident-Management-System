@@ -5,7 +5,7 @@ class Settings(BaseSettings):
     PROJECT_NAME: str = "Incident Management System API"
     API_V1_STR: str = "/api/v1"
     
-    SECRET_KEY: str = "super-secret-jwt-key"
+    SECRET_KEY: str = "replace-this-with-a-secure-64-character-string-in-production"
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8  # 8 days
     

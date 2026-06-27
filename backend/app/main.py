@@ -27,7 +27,10 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "http://localhost:8080",
+        "https://ims-frontend-1053994989870.us-central1.run.app"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -46,12 +49,4 @@ async def health_check(response: Response, db: AsyncSession = Depends(get_db)):
         response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
         return {"status": "error", "database": "unreachable"}
 
-@app.get("/api/v1/migrate")
-def run_migrations():
-    import os
-    import subprocess
-    try:
-        result = subprocess.run(["alembic", "upgrade", "head"], capture_output=True, text=True, check=True)
-        return {"status": "success", "output": result.stderr}
-    except subprocess.CalledProcessError as e:
-        return {"status": "error", "output": e.stderr}
+
