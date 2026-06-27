@@ -52,7 +52,7 @@ export class AuthService {
     if (url === '/login' || url === '/') {
       if (role === 'admin') this.router.navigate(['/admin/dashboard']);
       else if (role === 'support') this.router.navigate(['/support/dashboard']);
-      else this.router.navigate(['/staff/dashboard']);
+      else this.router.navigate(['/service-desk/dashboard']);
     }
   }
 
