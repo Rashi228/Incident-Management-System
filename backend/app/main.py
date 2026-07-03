@@ -20,9 +20,24 @@ logHandler.setFormatter(formatter)
 logger.addHandler(logHandler)
 logger.setLevel(logging.INFO)
 
+from contextlib import asynccontextmanager
+from app.services.report_service import init_gemini
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup: Initialize Gemini Singleton
+    try:
+        init_gemini()
+        logger.info("Gemini API initialized successfully at startup")
+    except Exception as e:
+        logger.error(f"Warning: Failed to initialize Gemini on startup: {e}")
+    yield
+    # Shutdown logic if any
+
 app = FastAPI(
     title=settings.PROJECT_NAME,
-    openapi_url=f"{settings.API_V1_STR}/openapi.json"
+    openapi_url=f"{settings.API_V1_STR}/openapi.json",
+    lifespan=lifespan
 )
 
 app.add_middleware(

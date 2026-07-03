@@ -2,16 +2,24 @@ import logging
 from fpdf import FPDF
 from datetime import datetime
 import google.generativeai as genai
+from tenacity import retry, stop_after_attempt, wait_exponential
 from app.core.config import settings
 from app.services.supabase_service import upload_pdf_to_supabase
 
 logger = logging.getLogger(__name__)
 
-def configure_gemini():
-    if not settings.GEMINI_API_KEY:
-        raise Exception("GEMINI_API_KEY is not configured in .env")
-    genai.configure(api_key=settings.GEMINI_API_KEY)
-    return genai.GenerativeModel("gemini-flash-lite-latest")  # free tier model
+# Singleton instance
+_gemini_model = None
+
+def init_gemini():
+    global _gemini_model
+    if _gemini_model is None:
+        if not settings.GEMINI_API_KEY:
+            raise Exception("GEMINI_API_KEY is not configured in .env")
+        genai.configure(api_key=settings.GEMINI_API_KEY)
+        _gemini_model = genai.GenerativeModel("gemini-1.5-flash")
+        logger.info("Gemini API initialized successfully via Singleton")
+    return _gemini_model
 
 # ─────────────────────────────────────────────
 # Prompt Builders
@@ -92,13 +100,14 @@ Write a concise executive report with these 4 sections using plain text only, no
 # Gemini API Call
 # ─────────────────────────────────────────────
 
+@retry(wait=wait_exponential(multiplier=1, min=2, max=10), stop=stop_after_attempt(3), reraise=True)
 def generate_with_gemini(prompt: str) -> str:
     try:
-        model = configure_gemini()
+        model = init_gemini()
         response = model.generate_content(prompt)
         return response.text
     except Exception as e:
-        logger.error(f"Gemini API error: {e}")
+        logger.error(f"Gemini API error during generation: {e}")
         raise Exception(f"Failed to generate report with Gemini: {str(e)}")
 
 # ─────────────────────────────────────────────
