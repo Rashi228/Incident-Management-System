@@ -1,25 +1,14 @@
 import logging
 from fpdf import FPDF
 from datetime import datetime
-import google.generativeai as genai
+import httpx
 from tenacity import retry, stop_after_attempt, wait_exponential
 from app.core.config import settings
 from app.services.supabase_service import upload_pdf_to_supabase
 
 logger = logging.getLogger(__name__)
 
-# Singleton instance
-_gemini_model = None
 
-def init_gemini():
-    global _gemini_model
-    if _gemini_model is None:
-        if not settings.GEMINI_API_KEY:
-            raise Exception("GEMINI_API_KEY is not configured in .env")
-        genai.configure(api_key=settings.GEMINI_API_KEY)
-        _gemini_model = genai.GenerativeModel("gemini-1.5-flash")
-        logger.info("Gemini API initialized successfully via Singleton")
-    return _gemini_model
 
 # ─────────────────────────────────────────────
 # Prompt Builders
@@ -100,15 +89,47 @@ Write a concise executive report with these 4 sections using plain text only, no
 # Gemini API Call
 # ─────────────────────────────────────────────
 
-@retry(wait=wait_exponential(multiplier=1, min=2, max=10), stop=stop_after_attempt(3), reraise=True)
+import sys
+
+@retry(wait=wait_exponential(multiplier=1.5, min=4, max=15), stop=stop_after_attempt(4), reraise=True)
 def generate_with_gemini(prompt: str) -> str:
+    print("[DEBUG] generate_with_gemini: STARTING REST CALL")
+    sys.stdout.flush()
     try:
-        model = init_gemini()
-        response = model.generate_content(prompt)
-        return response.text
+        api_key = settings.GEMINI_API_KEY
+        if not api_key:
+            raise Exception("GEMINI_API_KEY is missing")
+            
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key={api_key}"
+        payload = {
+            "contents": [{"parts": [{"text": prompt}]}]
+        }
+        
+        print("[DEBUG] generate_with_gemini: Sending HTTPX POST to Gemini API")
+        sys.stdout.flush()
+        
+        # Use a generous 25-second timeout for the REST call
+        response = httpx.post(url, json=payload, timeout=25.0)
+        response.raise_for_status()
+        
+        data = response.json()
+        print("[DEBUG] generate_with_gemini: Successfully got response from Gemini REST API")
+        sys.stdout.flush()
+        
+        # Extract text from the response payload
+        text = data.get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "")
+        if not text:
+            raise Exception(f"Empty or malformed text response: {data}")
+            
+        return text
     except Exception as e:
+        print(f"[DEBUG] generate_with_gemini: CAUGHT EXCEPTION: {e}")
+        sys.stdout.flush()
         logger.error(f"Gemini API error during generation: {e}")
-        raise Exception(f"Failed to generate report with Gemini: {str(e)}")
+        # FALLBACK: If Gemini fails due to quota/network, return a safe string 
+        # that allows the PDF to still be built from the database fields.
+        logger.warning("Using basic fallback report due to Gemini failure.")
+        return "AI Generation failed (Quota Exceeded or Network Error). Please refer to the raw ticket data above."
 
 # ─────────────────────────────────────────────
 # PDF Generation with fpdf2
@@ -143,13 +164,29 @@ def generate_pdf(title: str, subtitle: str, content: str, report_type: str) -> b
         # Force encode/decode to latin-1 to strip any other unmappable unicode chars
         return text.encode('latin-1', errors='replace').decode('latin-1')
 
-    title = sanitize_text(title)
-    subtitle = sanitize_text(subtitle)
+    # Break excessively long continuous strings (like URLs or -------- lines) so FPDF word-wrap doesn't fail
+    # Break excessively long continuous strings so FPDF word-wrap doesn't fail
+    def break_long_words(text: str, max_len: int = 35) -> str:
+        words = text.split() # Splits by any whitespace including tabs
+        broken = []
+        for w in words:
+            if len(w) > max_len:
+                broken.append(" ".join([w[i:i+max_len] for i in range(0, len(w), max_len)]))
+            else:
+                broken.append(w)
+        return " ".join(broken)
+
+    title = break_long_words(sanitize_text(title))
+    subtitle = break_long_words(sanitize_text(subtitle))
     content = sanitize_text(content)
     
     # Title
     pdf.set_font("Helvetica", "B", 15)
-    pdf.multi_cell(0, 8, title, align="L", wrapmode="CHAR")
+    try:
+        pdf.multi_cell(0, 8, title, align="L")
+    except Exception as e:
+        print(f"[DEBUG] multi_cell failed on title: {e}")
+        pass
     pdf.set_font("Helvetica", "", 10)
     pdf.set_text_color(100, 116, 139)
     pdf.cell(0, 6, f"Generated on: {datetime.utcnow().strftime('%B %d, %Y at %H:%M UTC')}", new_x="LMARGIN", new_y="NEXT")
@@ -167,7 +204,7 @@ def generate_pdf(title: str, subtitle: str, content: str, report_type: str) -> b
     pdf.set_font("Helvetica", "", 11)
 
     for line in content.split("\n"):
-        stripped = line.strip()
+        stripped = break_long_words(line.strip())
         if not stripped:
             pdf.ln(3)
             continue
@@ -176,11 +213,19 @@ def generate_pdf(title: str, subtitle: str, content: str, report_type: str) -> b
             pdf.ln(4)
             pdf.set_font("Helvetica", "B", 12)
             pdf.set_text_color(0, 85, 135)
-            pdf.multi_cell(0, 7, stripped, wrapmode="CHAR")
+            try:
+                pdf.multi_cell(0, 7, stripped)
+            except Exception as e:
+                print(f"[DEBUG] multi_cell failed on header line: {e}")
+                pass
             pdf.set_font("Helvetica", "", 11)
             pdf.set_text_color(30, 41, 59)
         else:
-            pdf.multi_cell(0, 6, stripped, wrapmode="CHAR")
+            try:
+                pdf.multi_cell(0, 6, stripped)
+            except Exception as e:
+                print(f"[DEBUG] multi_cell failed on body line: {e}")
+                pass
 
     # Footer
     pdf.set_y(-20)
@@ -202,7 +247,16 @@ def generate_and_upload_report(
     file_name: str
 ) -> str:
     """Full pipeline: Gemini → PDF → Supabase → returns public URL"""
+    import sys
+    print("[DEBUG] generate_and_upload_report: Calling generate_with_gemini")
+    sys.stdout.flush()
     content = generate_with_gemini(prompt)
+    print("[DEBUG] generate_and_upload_report: generate_with_gemini complete. Calling generate_pdf")
+    sys.stdout.flush()
     pdf_bytes = generate_pdf(pdf_title, pdf_subtitle, content, report_type)
+    print("[DEBUG] generate_and_upload_report: generate_pdf complete. Calling upload_pdf_to_supabase")
+    sys.stdout.flush()
     url = upload_pdf_to_supabase(pdf_bytes, file_name)
+    print(f"[DEBUG] generate_and_upload_report: upload_pdf_to_supabase complete. URL: {url}")
+    sys.stdout.flush()
     return url

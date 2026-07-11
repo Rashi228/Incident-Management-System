@@ -78,9 +78,7 @@ async def generate_postmortem(
     file_name = f"postmortem_{incident_id}_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.pdf"
 
     try:
-        from fastapi.concurrency import run_in_threadpool
-        url = await run_in_threadpool(
-            report_service.generate_and_upload_report,
+        url = report_service.generate_and_upload_report(
             prompt=prompt,
             pdf_title=incident.title,
             pdf_subtitle=f"Category: {incident.category} | Priority: {incident.priority.upper()} | Status: {incident.status.replace('_', ' ').title()}",
@@ -88,7 +86,10 @@ async def generate_postmortem(
             file_name=file_name
         )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        error_msg = f"Report generation failed: {repr(e)}"
+        import logging
+        logging.getLogger(__name__).error(error_msg)
+        raise HTTPException(status_code=500, detail=error_msg)
 
     # Save record to DB
     db_report = Report(
@@ -128,18 +129,26 @@ async def generate_summary(
     prompt = report_service.build_summary_prompt(incident, creator_name)
     file_name = f"summary_{incident_id}_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.pdf"
 
+    print(f"[DEBUG] summary endpoint: Incident {incident_id} found. Calling generate_and_upload_report...")
+    import sys
+    sys.stdout.flush()
     try:
-        from fastapi.concurrency import run_in_threadpool
-        url = await run_in_threadpool(
-            report_service.generate_and_upload_report,
+        url = report_service.generate_and_upload_report(
             prompt=prompt,
             pdf_title=incident.title,
             pdf_subtitle=f"Incident Summary | Raised by: {creator_name}",
             report_type="Summary",
             file_name=file_name
         )
+        print(f"[DEBUG] summary endpoint: generate_and_upload_report returned URL: {url}")
+        sys.stdout.flush()
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        print(f"[DEBUG] summary endpoint: CAUGHT EXCEPTION: {repr(e)}")
+        sys.stdout.flush()
+        error_msg = f"Summary generation failed: {repr(e)}"
+        import logging
+        logging.getLogger(__name__).error(error_msg)
+        raise HTTPException(status_code=500, detail=error_msg)
 
     db_report = Report(
         incident_id=incident_id,
@@ -190,9 +199,7 @@ async def generate_monthly_report(
     file_name = f"analytics_monthly_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.pdf"
 
     try:
-        from fastapi.concurrency import run_in_threadpool
-        url = await run_in_threadpool(
-            report_service.generate_and_upload_report,
+        url = report_service.generate_and_upload_report(
             prompt=prompt,
             pdf_title="Monthly Incident Analytics Report",
             pdf_subtitle=f"Total Incidents: {stats['total']} | Generated: {datetime.utcnow().strftime('%B %Y')}",

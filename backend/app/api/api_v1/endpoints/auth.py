@@ -19,10 +19,19 @@ async def login_access_token(
     form_data: OAuth2PasswordRequestForm = Depends()
 ) -> dict:
 
+    from fastapi.concurrency import run_in_threadpool
+    
     result = await db.execute(select(User).where(User.email == form_data.username))
     user = result.scalars().first()
     
-    if not user or not security.verify_password(form_data.password, user.hashed_password):
+    if not user:
+        raise HTTPException(status_code=400, detail="Incorrect email or password")
+        
+    is_password_correct = await run_in_threadpool(
+        security.verify_password, form_data.password, user.hashed_password
+    )
+    
+    if not is_password_correct:
         raise HTTPException(status_code=400, detail="Incorrect email or password")
     
     # Handle pending approvals
