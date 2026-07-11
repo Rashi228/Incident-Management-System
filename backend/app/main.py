@@ -21,16 +21,10 @@ logger.addHandler(logHandler)
 logger.setLevel(logging.INFO)
 
 from contextlib import asynccontextmanager
-from app.services.report_service import init_gemini
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup: Initialize Gemini Singleton
-    try:
-        init_gemini()
-        logger.info("Gemini API initialized successfully at startup")
-    except Exception as e:
-        logger.error(f"Warning: Failed to initialize Gemini on startup: {e}")
+    # Startup tasks
+    logger.info("Application starting up...")
     yield
     # Shutdown logic if any
 
@@ -44,7 +38,9 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:8080",
-        "https://ims-frontend-1053994989870.us-central1.run.app"
+        "https://ims-frontend-1053994989870.us-central1.run.app",
+        "https://storage.googleapis.com",
+        "http://storage.googleapis.com"
     ],
     allow_credentials=True,
     allow_methods=["*"],

@@ -1,4 +1,8 @@
 import asyncio
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 import uuid
 from datetime import datetime
 import sys
@@ -35,7 +39,7 @@ async def seed():
             )
             existing = result.fetchone()
             if existing:
-                print(f"⏩  User already exists: {u['email']}")
+                logger.info(f"⏩  User already exists: {u['email']}")
                 continue
 
             hashed = pwd_context.hash(u["password"])
@@ -55,12 +59,12 @@ async def seed():
                     "approval_status": "approved",
                 }
             )
-            print(f"✅  Created: {u['email']}  (password: {u['password']})")
+            logger.info(f"✅  Created: {u['email']}  (password: {u['password']})")
 
         await session.commit()
 
     await engine.dispose()
-    print("\n🎉  Seed complete! You can now log in.")
+    logger.info("\n🎉  Seed complete! You can now log in.")
 
 if __name__ == "__main__":
     asyncio.run(seed())

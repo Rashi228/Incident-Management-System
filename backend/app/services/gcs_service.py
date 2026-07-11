@@ -1,5 +1,7 @@
 from google.cloud import storage
 from fastapi import UploadFile
+import logging
+logger = logging.getLogger(__name__)
 import uuid
 from app.core.config import settings
 
@@ -23,5 +25,5 @@ def upload_file_to_gcs(file: UploadFile) -> str:
         return f"https://storage.googleapis.com/{settings.GCP_BUCKET_NAME}/{unique_filename}"
     except Exception as e:
         # Fallback for local development if GCP is not configured yet
-        print(f"Failed to upload to GCS: {e}")
+        logger.warning(f"Failed to upload to GCS: {e}")
         return f"http://localhost:8000/mock-uploads/{file.filename}"

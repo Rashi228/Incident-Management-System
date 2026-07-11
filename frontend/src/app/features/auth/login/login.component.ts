@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { finalize } from 'rxjs/operators';
 import { AuthService } from '../../../core/services/auth.service';
 import { ToastService } from '../../../core/services/toast.service';
 
@@ -45,15 +46,18 @@ export class LoginComponent {
     this.isLoading = true;
     const { username, password } = this.loginForm.value;
 
-    this.authService.login(username, password).subscribe({
-      next: () => {
-        this.toast.success('Login successful! Redirecting...');
-      },
-      error: (err: any) => {
-        this.toast.error(err.error?.detail || 'Invalid credentials. Please try again.');
+    this.authService.login(username, password)
+      .pipe(finalize(() => {
         this.isLoading = false;
-      }
-    });
+      }))
+      .subscribe({
+        next: () => {
+          this.toast.success('Login successful! Redirecting...');
+        },
+        error: (err: any) => {
+          this.toast.error(err.error?.detail || 'Invalid credentials. Please try again.');
+        }
+      });
   }
 
   getFieldError(field: string): string {

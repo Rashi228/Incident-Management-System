@@ -48,7 +48,7 @@ export class AuthService {
   }
 
   redirectByRole(role: string) {
-    const url = this.router.url;
+    const url = this.router.url.split('?')[0]; // Strip query params
     if (url === '/login' || url === '/') {
       if (role === 'admin') this.router.navigate(['/admin/dashboard']);
       else if (role === 'support') this.router.navigate(['/support/dashboard']);
