@@ -77,5 +77,5 @@ jobs:
           cd terraform
           BUCKET_NAME=$(terraform output -raw storage_bucket_name)
           cd ../frontend
-          gsutil -m rsync -R dist/ims-frontend/browser gs://$BUCKET_NAME/
+          gsutil -m rsync -R dist/frontend/browser gs://$BUCKET_NAME/
           gsutil setmeta -h "Cache-Control:no-cache, max-age=0" gs://$BUCKET_NAME/index.html
