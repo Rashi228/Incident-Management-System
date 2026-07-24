@@ -17,12 +17,7 @@ provider "google" {
   region  = var.region
 }
 
-resource "google_artifact_registry_repository" "ims_repo" {
-  location      = var.region
-  repository_id = "ims-repo"
-  description   = "Docker repository for IMS components"
-  format        = "DOCKER"
-}
+# (Artifact Registry is managed manually)
 
 resource "google_cloud_run_v2_service" "backend" {
   name     = "ims-backend"
@@ -59,9 +54,10 @@ resource "google_cloud_run_v2_service" "backend" {
 }
 
 resource "google_storage_bucket" "frontend_bucket" {
-  name          = var.frontend_bucket_name
-  location      = var.region
-  force_destroy = true
+  name                        = var.frontend_bucket_name
+  location                    = var.region
+  force_destroy               = true
+  uniform_bucket_level_access = true
 
   website {
     main_page_suffix = "index.html"
