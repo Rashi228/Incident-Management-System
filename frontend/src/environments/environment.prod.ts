@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://ims-backend-1053994989870.us-central1.run.app/api/v1'
+  apiUrl: 'https://ims-backend-pveyn5r6vq-el.a.run.app/api/v1'
 };
